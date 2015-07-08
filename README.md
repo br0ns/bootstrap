@@ -1,4 +1,4 @@
-= Bootstrap
+# Bootstrap
 
 A collection of scripts to set up my system the way I like it.
 
