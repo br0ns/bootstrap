@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Where in the world is bootstrap?
-BOOTSTRAP_ARCHIVE="https://git.pwnies.dk/br0ns/vcsh-bootstrap/repository/archive.tar"
+BOOTSTRAP_ARCHIVE="https://github.com/br0ns/bootstrap/archive/master.zip"
 
 # Bail on any error
 set -e
@@ -33,11 +33,11 @@ if [ "$0" = "$BASH_SOURCE" ] && [ ! "$BOOTSTRAP_SOURCED" = true ] ; then
         fi
 
         INFO Downloading Bootstrap GIT archive
-        run wget "$BOOTSTRAP_ARCHIVE" --no-check-certificate
-        run tar xfv archive.tar
+        run wget "$BOOTSTRAP_ARCHIVE"
+        run unzip bootstrap-master.zip
         INFO "Here goes"
         echo
-        vcsh-bootstrap.git/bootstrap/bootstrap "$@"
+        bootstrap-master/bootstrap "$@"
         exit
     fi
 
