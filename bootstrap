@@ -60,19 +60,24 @@ fi
 # Parse command line options
 SIMULATE=false
 ASK_STEP=false
+DO_FORCE=false
 VERBOSE=true
-while getopts "hsaq" OPTION ; do
+while getopts "hsafq" OPTION ; do
     case $OPTION in
-        h) echo "usage: $(basename "$0") [-h] [-s] [-a] [-q]"
+        h) echo "usage: $(basename "$0") [-h] [-s] [-a] [-f] [-q]"
            echo "  -h Help"
            echo "  -s Simulate"
            echo "  -a Ask before each step"
+           echo "  -f Force re-install (implies -a)"
            echo "  -q Quiet"
            exit 1
            ;;
         s) SIMULATE=true
            ;;
         a) ASK_STEP=true
+           ;;
+        f) DO_FORCE=true
+           ASK_STEP=true
            ;;
         q) VERBOSE=false
            ;;
@@ -227,6 +232,15 @@ function plural () {
     fi
 }
 
+function installed () {
+    for x in $@ ; do
+        if ! ( which $x || dpkg --status $x) >/dev/null 2>&1 ; then
+            return 1
+        fi
+    done
+    return 0
+}
+
 function require () {
     echo "Checking for required packages"
     for pkg in $@ ; do
@@ -239,15 +253,6 @@ function require () {
     done
 }
 
-function installed () {
-    for x in $@ ; do
-        if ! which $x >/dev/null ; then
-            return 1
-        fi
-    done
-    return 0
-}
-
 function prompt_install () {
     prog=$1
     if [ $# -eq 2 ] ; then
@@ -255,7 +260,7 @@ function prompt_install () {
     else
         name=$prog
     fi
-    if installed $prog ; then
+    if installed $prog && [ "$DO_FORCE" = false ] ; then
         OK $name
         exit 0
     fi
