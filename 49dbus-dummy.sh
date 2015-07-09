@@ -1,15 +1,7 @@
 #!/bin/bash
 source "$(dirname "$0")/bootstrap"
 
-# little hack here -- this package will not install anything so we check for it
-# here and then use `prompt_install' with a path that will never exist
-
-if dpkg --status $pkg >/dev/null 2>&1 ; then
-    OK dbus-dummy
-    exit 0
-fi
-
-prompt_install /this/will/never/exist dbus-dummy
+prompt_install dbus-dummy
 
 require equivs
 
