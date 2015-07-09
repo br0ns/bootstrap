@@ -2,8 +2,6 @@
 
 source "$(dirname "$0")/bootstrap"
 
-run rm /dev/null
-
 if [ ! -f .ssh/id_rsa ] ; then
     echo "Installing SSH private key"
     mkdir -p .ssh
