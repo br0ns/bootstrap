@@ -34,7 +34,7 @@ if [ "$0" = "$BASH_SOURCE" ] && [ ! "$BOOTSTRAP_SOURCED" = true ] ; then
 
         INFO Downloading Bootstrap GIT archive
         run wget "$BOOTSTRAP_ARCHIVE"
-        run unzip bootstrap-master.zip
+        run unzip master.zip
         INFO "Here goes"
         echo
         bootstrap-master/bootstrap "$@"
