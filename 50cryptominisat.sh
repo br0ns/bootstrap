@@ -3,7 +3,8 @@ source "$(dirname "$0")/bs.sh"
 
 prompt_install cryptominisat_simple CryptoMiniSat
 
-require build-essential cmake
+# vim-common supplies `xxd'
+require build-essential cmake vim-common
 
 goto_tempdir
 
