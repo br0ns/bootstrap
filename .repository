@@ -1,2 +1,0 @@
-This file is here so the `bootstrap' script can know whether it should download
-the step scripts from GIT or not
