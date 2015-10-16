@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# set -u # bail on undefined
+# set -e
+# trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+# trap 'echo FAILED COMMAND: $previous_command' EXIT
+
 # Where in the world is bootstrap?
 BOOTSTRAP_ARCHIVE="https://github.com/br0ns/bootstrap/archive/master.zip"
 
@@ -283,7 +288,7 @@ function goto_tempdir () {
     DIR="/tmp/install-$STEP"
     CLEAN="rm -rf $DIR 2>/dev/null || sudo rm -rf $DIR"
     eval $CLEAN
-    mkdir $DIR
+    mkdir -p $DIR
     run cd $DIR
     # update exit handler to clean up
     trap "$CLEAN;__finish" EXIT
