@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 prompt_install rofi Rofi
 
@@ -9,15 +9,15 @@ require \
 INFO Installing Rofi
 
 goto_tempdir
-# clone repo in tmp dir
-run git clone git@github.com:DaveDavenport/rofi.git .
+
+git clone git@github.com:DaveDavenport/rofi.git .
 
 # recipe from INSTALL.md
-run autoreconf -i
-run mkdir build
-run cd build
-run ../configure --prefix=/opt/rofi
-run make
-run sudo make install
+autoreconf -i
+mkdir build
+cd build
+../configure --prefix=/opt/rofi
+make
+sudo make install
 
 assert installed rofi

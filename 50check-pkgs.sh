@@ -1,11 +1,11 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
-prompt_install check-pkgs check-pkgs
+prompt_install check-pkgs
 
-run mkdir -p ~/bin
-run wget https://raw.githubusercontent.com/br0ns/check-pkgs/master/check-pkgs -O ~/bin/check-pkgs
-run chmod +x ~/bin/check-pkgs
-run sudo tee /etc/apt/apt.conf.d/99check-pkgs <<EOF
+mkdir -p ~/bin
+wget https://raw.githubusercontent.com/br0ns/check-pkgs/master/check-pkgs -O ~/bin/check-pkgs
+chmod +x ~/bin/check-pkgs
+sudo tee /etc/apt/apt.conf.d/99check-pkgs <<EOF
 DPkg::Post-Invoke {"$HOME/bin/check-pkgs";};
 EOF

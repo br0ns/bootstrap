@@ -1,10 +1,8 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 arch=i386
 if [[ ! "$(dpkg --print-foreign-architectures)" =~ "$arch" ]] ; then
-    echo "Adding APT foreign architecture: $arch"
-    run sudo dpkg --add-architecture $arch
-    echo "DONE"
-    echo
+    INFO "Adding APT foreign architecture: $arch"
+    sudo dpkg --add-architecture $arch
 fi

@@ -1,7 +1,7 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
-echo "Checking VCSH repositories"
+INFO "Checking VCSH repositories"
 REPOS="bash emacs gdb git gtk misc pkgs secret xconfig xmonad"
 DOASKPULL=0
 for repo in $REPOS ; do
@@ -16,12 +16,12 @@ for repo in $REPOS ; do
         fi
         OK $repo
         if [ $DOPULL -eq 0 ] ; then
-            run "vcsh $repo pull"
+            vcsh $repo pull
         fi
     else
         INFO Cloning $repo
-        run "vcsh clone git@github.com:br0ns/vcsh-$repo.git $repo"
-        run "vcsh $repo checkout master -f"
+        vcsh clone git@github.com:br0ns/vcsh-$repo.git $repo
+        vcsh $repo checkout master -f
     fi
     assert [ -d ".config/vcsh/repo.d/$repo.git" ]
 done

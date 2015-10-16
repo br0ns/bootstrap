@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 # We don't want to touch /etc/apt/sources.list in case it changes between
 # distribution versions, so just assert that "contrib" and "non-free" are there

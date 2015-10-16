@@ -1,11 +1,11 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 prompt_install mosml MoscowML
 
 goto_tempdir
 
-run git clone git@github.com:kfl/mosml.git .
+git clone git@github.com:kfl/mosml.git .
 cd src
-run make
-run sudo make install
+make
+sudo make install

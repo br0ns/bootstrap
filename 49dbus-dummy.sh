@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 prompt_install dbus-dummy
 
@@ -20,5 +20,5 @@ Architecture: all
 Description: Empty package providing \`dbus' and \`dbus-x11'.
 EOF
 
-run equivs-build dbus-dummy-control
-run sudo dpkg --install dbus-dummy_1.0_all.deb
+equivs-build dbus-dummy-control
+sudo dpkg --install dbus-dummy_1.0_all.deb

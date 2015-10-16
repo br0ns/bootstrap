@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 prompt_install factor.sh CadoNFS
 
@@ -9,11 +9,11 @@ INFO Installing CadoNFS
 
 goto_tempdir
 
-run sudo rm -rf /opt/cado-nfs
-run sudo mkdir /opt/cado-nfs
+sudo rm -rf /opt/cado-nfs
+sudo mkdir /opt/cado-nfs
 
-run git clone https://gforge.inria.fr/git/cado-nfs/cado-nfs.git .
+git clone https://gforge.inria.fr/git/cado-nfs/cado-nfs.git .
 
-run make PREFIX=/opt/cado-nfs cmake
-run make
-run sudo make install
+make PREFIX=/opt/cado-nfs cmake
+make
+sudo make install

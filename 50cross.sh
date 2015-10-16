@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 # Look for an arbitrary binary
 # prompt_install i386-unknown-linux-gnu-ar binutils

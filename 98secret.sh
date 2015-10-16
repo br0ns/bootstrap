@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$0")/bootstrap"
+source "$(dirname "$0")/bs.sh"
 
 if [ -e .secret/secret.lst ] ; then
     default="n"
@@ -9,4 +9,4 @@ fi
 
 prompt_step "Run \`secret.py restore' now?" $default
 
-run .secret/secret.py restore
+.secret/secret.py restore
