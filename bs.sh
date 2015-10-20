@@ -247,7 +247,8 @@ plural () {
 
 installed () {
     for x in $@ ; do
-        if ! ( which $x || dpkg --status $x) >/dev/null 2>&1 ; then
+        if ! ( [ "${x:0:1}" = "/" ] && [ -e "$x" ] || \
+               which $x || dpkg --status $x ) >/dev/null 2>&1 ; then
             return 1
         fi
     done
