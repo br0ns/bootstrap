@@ -347,7 +347,14 @@ prompt_install () {
     else
         name=$prog
     fi
-    installed $prog && [ "$FORCE" != true ] && exit 0
+    if installed $prog && [ "$FORCE" != true ] ; then
+        # If the user ran this script directly, maybe she wants to re-install
+        if [ -z "${BOOTSTRAP_ALL+x}" ] ; then
+            promptyn "\`$name' is already installed; Re-install?" "y" || exit 0
+            return 0
+        fi
+        exit 0
+    fi
     # The user already agreed to run this step, so don't ask again
     [ "$ASK_STEP" = true ] && return 0
     # The user ran the step directly which shows intent, so don't ask
