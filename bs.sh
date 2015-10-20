@@ -359,7 +359,7 @@ prompt_install () {
     # The user already agreed to run this step, so don't ask again
     [ "$ASK_STEP" = true ] && return 0
     # The user ran the step directly which shows intent, so don't ask
-    [ -z "${BOOTSTRAP_ALL+x}" ] || return 0
+    [ -z "${BOOTSTRAP_ALL+x}" ] && return 0
     promptyn "\`$name' is not installed; Install now?" "y" || exit 0
     return 0
 }
