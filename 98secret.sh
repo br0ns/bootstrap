@@ -9,4 +9,6 @@ fi
 
 prompt_step "Run \`secret.py restore' now?" $default
 
+require ssh-askpass
+
 .secret/secret.py restore
