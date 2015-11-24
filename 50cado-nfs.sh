@@ -3,7 +3,7 @@ source "$(dirname "$0")/bs.sh"
 
 prompt_install factor.sh CadoNFS
 
-require cmake libgmp3-dev
+require cmake libgmp-dev g++ python3
 
 INFO Installing CadoNFS
 

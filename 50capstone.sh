@@ -3,6 +3,8 @@ source "$(dirname "$0")/bs.sh"
 
 prompt_install /usr/lib/libcapstone.a Capstone
 
+require gcc libc6-dev
+
 goto_tempdir
 
 git clone https://github.com/aquynh/capstone
