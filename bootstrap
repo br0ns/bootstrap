@@ -12,6 +12,14 @@ set -e
 # If this file does not exist it's probably because we're bootstrapping a fresh
 # system.  So we download the Git repository and bootstrap from there
 if [ ! -e "$(dirname "$0")/bs.sh" ] ; then
+    # Required packages
+    for pkg in ca-certificates unzip wget ; do
+        if ! dpkg --status $pkg >/dev/null 2>&1 ; then
+            echo Installing $pkg
+            sudo CHECK_PKGS_DONT_RUN=1 apt-get install --yes --no-install-recommends $pkg
+        fi
+    done
+
     TEMPDIR="$(mktemp -d /tmp/bootstrap.XXXXXXXXXX)"
     echo -e "Downloading \x1b[32m$BOOTSTRAP_ARCHIVE\x1b[m => \x1b[32m$TEMPDIR/\x1b[m"
     cd $TEMPDIR
