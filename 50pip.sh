@@ -3,7 +3,7 @@ source "$(dirname "$0")/bs.sh"
 
 prompt_install pip
 
-# require
+require python-pip
 
 goto_tempdir
 

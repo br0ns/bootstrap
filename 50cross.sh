@@ -1,6 +1,10 @@
 #!/bin/bash
 source "$(dirname "$0")/bs.sh"
 
+# XXX:
+# XXX: This script does not work yet!
+# XXX:
+
 # Look for an arbitrary binary
 # prompt_install i386-unknown-linux-gnu-ar binutils
 
@@ -45,10 +49,10 @@ function LINUXARCH () {
 }
 
 # First install binutils
-run wget http://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.gz
-run wget http://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.gz.sig
-run gpg --verify binutils-$BINUTILS_VERSION.tar.gz.sig || exit 1
-run tar zxfv binutils-$BINUTILS_VERSION.tar.gz
+wget http://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.gz
+wget http://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.gz.sig
+gpg --verify binutils-$BINUTILS_VERSION.tar.gz.sig || exit 1
+tar zxfv binutils-$BINUTILS_VERSION.tar.gz
 
 for ARCH in i386 x86_64 aarch64 alpha avr arm mips msp430 powerpc m68k sparc vax; do
     PREFIX=$(PREFIX $ARCH)
@@ -58,42 +62,42 @@ for ARCH in i386 x86_64 aarch64 alpha avr arm mips msp430 powerpc m68k sparc vax
     echo $PREFIX
     echo $TARGET
 
-    run rm -rf build-binutil
-    run mkdir build-binutil
-    run pushd build-binutil
-    run ../binutils-$BINUTILS_VERSION/configure --prefix=$PREFIX \
+    rm -rf build-binutil
+    mkdir build-binutil
+    pushd build-binutil
+    ../binutils-$BINUTILS_VERSION/configure --prefix=$PREFIX \
         --target=$TARGET --disable-nls --disable-multilib
-    run make -j$PARALLELISM
-    run sudo make install
-    run popd
+    make -j$PARALLELISM
+    sudo make install
+    popd
 done
 
 # Then install the latest and greatest GCC in the host
-run wget https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.gz
-run tar zxfv gcc-$GCC_VERSION.tar.gz
-run pushd gcc-$GCC_VERSION/contrib
-run ./download_prerequisites
-run popd
+wget https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.gz
+tar zxfv gcc-$GCC_VERSION.tar.gz
+pushd gcc-$GCC_VERSION/contrib
+./download_prerequisites
+popd
 
-run rm -rf build-gcc
-run mkdir build-gcc
-run pushd build-gcc
-run ../gcc-$GCC_VERSION/configure --prefix=/opt/gcc --disable-nls
-run make -j$PARALLELISM
-run sudo make install
+rm -rf build-gcc
+mkdir build-gcc
+pushd build-gcc
+../gcc-$GCC_VERSION/configure --prefix=/opt/gcc --disable-nls
+make -j$PARALLELISM
+sudo make install
 popd
 
 PATH="/opt/gcc:$PATH"
 
 # Download Linux kernel
-run wget https://www.kernel.org/pub/linux/kernel/v4.x/linux-$LINUX_VERSION.tar.xz
-run tar Jxfv linux-$LINUX_VERSION.tar.xz
+wget https://www.kernel.org/pub/linux/kernel/v4.x/linux-$LINUX_VERSION.tar.xz
+tar Jxfv linux-$LINUX_VERSION.tar.xz
 
 # Download GLIBC
-run wget https://ftp.gnu.org/gnu/glibc/glibc-$GLIBC_VERSION.tar.gz
-run wget https://ftp.gnu.org/gnu/glibc/glibc-$GLIBC_VERSION.tar.gz.sig
-run gpg --verify glibc-$GLIBC_VERSION.tar.gz.sig || exit 1
-run tar zxfv glibc-$GLIBC_VERSION.tar.gz
+wget https://ftp.gnu.org/gnu/glibc/glibc-$GLIBC_VERSION.tar.gz
+wget https://ftp.gnu.org/gnu/glibc/glibc-$GLIBC_VERSION.tar.gz.sig
+gpg --verify glibc-$GLIBC_VERSION.tar.gz.sig || exit 1
+tar zxfv glibc-$GLIBC_VERSION.tar.gz
 
 # There are no kernel headers for MSP430, but it is in APT
 require gcc-msp430
@@ -108,54 +112,54 @@ for ARCH in i386 x86_64 aarch64 alpha avr arm mips powerpc m68k sparc; do
     TARGET=$(TARGET $ARCH)
 
     # Build Linux kernel headers
-    run pushd linux-$LINUX_VERSION
-    run sudo make ARCH=$(LINUXARCH $ARCH) INSTALL_HDR_PATH=$PREFIX/$TARGET \
+    pushd linux-$LINUX_VERSION
+    sudo make ARCH=$(LINUXARCH $ARCH) INSTALL_HDR_PATH=$PREFIX/$TARGET \
         headers_install
-    run popd
+    popd
 
     # Build a "naked" GCC
-    run rm -rf build-gcc
-    run mkdir build-gcc
-    run pushd build-gcc
-    run ../gcc-$GCC_VERSION/configure --prefix=$PREFIX --target=$TARGET \
+    rm -rf build-gcc
+    mkdir build-gcc
+    pushd build-gcc
+    ../gcc-$GCC_VERSION/configure --prefix=$PREFIX --target=$TARGET \
         --enable-languages=c,c++ --disable-nls --disable-multilib
-    run make -j$PARALLELISM all-gcc
-    run sudo env "PATH=\"$PATH\"" make install-gcc
+    make -j$PARALLELISM all-gcc
+    sudo env "PATH=\"$PATH\"" make install-gcc
     popd
 
     # glibc headers and CRT
-    run sudo rm -rf build-glibc
-    run mkdir build-glibc
-    run pushd build-glibc
-    run ../glibc-$GLIBC_VERSION/configure --prefix=$PREFIX/$TARGET \
+    sudo rm -rf build-glibc
+    mkdir build-glibc
+    pushd build-glibc
+    ../glibc-$GLIBC_VERSION/configure --prefix=$PREFIX/$TARGET \
         --build=$MACHTYPE --host=$TARGET --target=$TARGET \
         --with-headers=$PREFIX/$TARGET/include --disable-multilib \
         libc_cv_forced_unwind=yes
-    run sudo env "PATH=$PREFIX/bin:$PATH" make install-bootstrap-headers=yes \
+    sudo env "PATH=$PREFIX/bin:$PATH" make install-bootstrap-headers=yes \
         install-headers
-    run make -j$PARALLELISM csu/subdir_lib
-    run sudo install csu/crt1.o csu/crti.o csu/crtn.o $PREFIX/$TARGET/lib
-    run env "PATH=$PREFIX/bin:$PATH" sudo $TARGET-gcc -nostdlib -nostartfiles \
+    make -j$PARALLELISM csu/subdir_lib
+    sudo install csu/crt1.o csu/crti.o csu/crtn.o $PREFIX/$TARGET/lib
+    env "PATH=$PREFIX/bin:$PATH" sudo $TARGET-gcc -nostdlib -nostartfiles \
         -shared -x c /dev/null -o $PREFIX/$TARGET/lib/libc.so
-    run sudo touch $PREFIX/$TARGET/include/gnu/stubs.h
-    run popd
+    sudo touch $PREFIX/$TARGET/include/gnu/stubs.h
+    popd
 
     # # libgcc
-    # run pushd build-gcc
-    # run make -j$PARALLELISM all-target-libgcc
-    # run sudo make install-target-libgcc
-    # run popd
+    # pushd build-gcc
+    # make -j$PARALLELISM all-target-libgcc
+    # sudo make install-target-libgcc
+    # popd
 
     # # glibc
-    # run pushd build-glibc
-    # run sudo env "PATH=$PREFIX/bin:$PATH" make -j$PARALLELISM
-    # run sudo env "PATH=$PREFIX/bin:$PATH" make -j$PARALLELISM all
-    # run sudo env "PATH=$PREFIX/bin:$PATH" make install
-    # run popd
+    # pushd build-glibc
+    # sudo env "PATH=$PREFIX/bin:$PATH" make -j$PARALLELISM
+    # sudo env "PATH=$PREFIX/bin:$PATH" make -j$PARALLELISM all
+    # sudo env "PATH=$PREFIX/bin:$PATH" make install
+    # popd
 
     # # gcc
-    # run pushd build-gcc
-    # run sudo env "PATH=$PREFIX/bin:$PATH" make -j$PARALLELISM all
-    # run sudo env "PATH=$PREFIX/bin:$PATH" make install
-    # run popd
+    # pushd build-gcc
+    # sudo env "PATH=$PREFIX/bin:$PATH" make -j$PARALLELISM all
+    # sudo env "PATH=$PREFIX/bin:$PATH" make install
+    # popd
 done

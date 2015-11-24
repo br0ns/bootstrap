@@ -4,7 +4,7 @@ source "$(dirname "$0")/bs.sh"
 prompt_install cryptominisat4_simple CryptoMiniSat
 
 # vim-common supplies `xxd'
-require build-essential cmake vim-common
+require build-essential cmake vim-common libm4ri
 
 goto_tempdir
 

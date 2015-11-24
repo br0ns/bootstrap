@@ -31,7 +31,7 @@ for ARCH in i386 x86_64 aarch64 alpha avr arm mips msp430 powerpc m68k sparc vax
     rm -rf build
     mkdir build
     pushd build
-    ../binutils-$BINUTILS_VERSION/configure \
+    sudo ../binutils-$BINUTILS_VERSION/configure \
         --prefix=$PREFIX \
         --target=$TARGET \
         --disable-nls \
