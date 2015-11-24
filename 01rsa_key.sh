@@ -56,4 +56,9 @@ EOF
     chmod 0400 .ssh/id_rsa
     ssh-keygen -y -f .ssh/id_rsa > .ssh/id_rsa.pub
     assert [ -f .ssh/id_rsa ]
+
+    # Start SSH agent and add key
+    eval $(ssh-agent)
+    sleep 0.5
+    ssh-add
 fi
