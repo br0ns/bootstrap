@@ -4,7 +4,8 @@ source "$(dirname "$0")/bs.sh"
 prompt_install rofi Rofi
 
 require \
-    autoconf automake libpango1.0-dev libxinerama-dev make
+    autoconf automake libpango1.0-dev libxinerama-dev make \
+    libstartup-notification0-dev
 
 INFO Installing Rofi
 
@@ -19,5 +20,8 @@ cd build
 ../configure --prefix=/opt/rofi
 make
 sudo make install
+
+# Update PATH maybe?
+[ -f ~/.profile ] && . ~/.profile
 
 assert installed rofi

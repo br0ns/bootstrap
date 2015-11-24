@@ -1,7 +1,7 @@
 #!/bin/bash
 source "$(dirname "$0")/bs.sh"
 
-prompt_install factor.sh CadoNFS
+prompt_install cado-nfs.py CadoNFS
 
 require cmake libgmp-dev g++ python3
 
