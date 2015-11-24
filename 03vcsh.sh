@@ -20,8 +20,9 @@ for repo in $REPOS ; do
         fi
     else
         INFO Cloning $repo
-        vcsh clone git@github.com:br0ns/vcsh-$repo.git $repo
-        vcsh $repo checkout master -f
+        vcsh clone git@github.com:br0ns/vcsh-$repo.git $repo --no-checkout
+        vcsh $repo fetch origin master
+        vcsh $repo reset --hard origin/master
     fi
     assert [ -d ".config/vcsh/repo.d/$repo.git" ]
 done
