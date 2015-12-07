@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# I mark files with this string so I can skip the ones I have already set uo
+BS_MARK="File written by Boostrap, do not edit"
+
 # Local variables
 __this_cmd=
 __this_lineno=
@@ -41,8 +44,17 @@ __log() {
     shift
     label=$1
     shift
-    echo -ne "\x1b[${ansi}m${label}\x1b[m "
-    printf '%s\n' "$*"
+    echo -ne "\x1b[${ansi}m${label}\x1b[m " > /dev/stderr
+    printf '%s' "$*" > /dev/stderr
+}
+
+__lognl() {
+    ansi=$1
+    shift
+    label=$1
+    shift
+    echo -ne "\x1b[${ansi}m${label}\x1b[m " > /dev/stderr
+    printf '%s\n' "$*" > /dev/stderr
 }
 
 DEBUG() {
@@ -50,7 +62,7 @@ DEBUG() {
     if [ "$VERBOSE" != true ] ; then
         return
     fi
-    __log $__FG$__CYAN "DD" "$*"
+    __lognl $__FG$__CYAN "DD" "$*"
 }
 
 OK() {
@@ -58,7 +70,7 @@ OK() {
     if [ "$SILENT" = true ] ; then
         return
     fi
-    __log $__FG$__GREEN "OK" "$*"
+    __lognl $__FG$__GREEN "OK" "$*"
 }
 
 INFO() {
@@ -66,20 +78,24 @@ INFO() {
     if [ "$SILENT" = true ] ; then
         return
     fi
-    __log $__FG$__BLUE "II" "$*"
+    __lognl $__FG$__BLUE "II" "$*"
 }
 
 WARN() {
-    __log $__FG$__YELLOW "!!" "$*"
+    __lognl $__FG$__YELLOW "!!" "$*"
 }
 
 ERR() {
-    __log $__FG$__RED "EE" "$*"
+    __lognl $__FG$__RED "EE" "$*"
 }
 
 DIE() {
-    __log "$__BOLD;$__BG$__RED" "!!" "$*"
+    __lognl "$__BOLD;$__BG$__RED" "!!" "$*"
     exit 1
+}
+
+QQ() {
+    __log "$__BOLD;$__FG$__WHITE" "??" "$*"
 }
 
 __on_debug() {
@@ -180,9 +196,6 @@ __on_error() {
         ERR "Command failed with exit code $ret"
     fi
     __context
-    # __context | while read line ; do
-    #                 ERR "$line"
-    #             done
 }
 
 __on_exit() {
@@ -194,6 +207,13 @@ __on_exit() {
         OK Done
         echo
     fi
+}
+
+__on_int() {
+    echo
+    WARN Interrupted
+    trap '' EXIT
+    exit 0
 }
 
 # Parse command line options
@@ -278,7 +298,7 @@ promptyn () {
         p="[y/n]"
     fi
     while true; do
-        echo -n "$1 $p "
+        QQ "$1 $p "
         read yn
         if [ "x$yn" == "xy" ] || \
                [ "x$yn" == "xyes" ] || \
@@ -296,14 +316,14 @@ promptyn () {
                [[ "x$yn" == "x" && $# -eq 2 && $2 == "n" ]] ; then
             return 1
         fi
-        echo "Please answer yes or no" > /dev/stderr
+        WARN "Please answer yes or no"
     done
 }
 
-
 function promptoptions () {
     while true ; do
-        read -p "$1 " opt
+        QQ "$1 "
+        read opt
         if [ "x${opt}" == "x" ] ; then
             echo "$3"
             return
@@ -312,7 +332,7 @@ function promptoptions () {
             echo "${opt}"
             return
         fi
-        echo "Invalid option" > /dev/stderr
+        WARN "Invalid option"
     done
 }
 
@@ -364,6 +384,28 @@ prompt_install () {
     return 0
 }
 
+function configured () {
+    head -n1 "$1" 2>/dev/null | grep -q "$BS_MARK"
+}
+
+function prompt_configure () {
+    file=$1
+    if configured $file && [ "$FORCE" != true ] ; then
+        # If the user ran this script directly, maybe she wants to re-configure
+        if [ -z "${BOOTSTRAP_ALL+x}" ] ; then
+            promptyn "\`$file' is already configured by Bootstrap; Re-configure?" "y" || exit 0
+            return 0
+        fi
+        exit 0
+    fi
+    # The user already agreed to run this step, so don't ask again
+    [ "$ASK_STEP" = true ] && return 0
+    # The user ran the step directly which shows intent, so don't ask
+    [ -z "${BOOTSTRAP_ALL+x}" ] && return 0
+    promptyn "\`$path' is not configured; Configure now?" "y" || exit 0
+    return 0
+}
+
 function prompt_step () {
     # The user already agreed to run this step, so don't ask again
     [ "$ASK_STEP" = true ] && return 0
@@ -402,4 +444,5 @@ cd
 # Set up trap handlers
 trap '__on_error' ERR
 trap '__on_exit' EXIT
+trap '__on_int' INT
 trap '__on_debug $LINENO' DEBUG

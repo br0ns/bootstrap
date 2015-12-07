@@ -9,3 +9,8 @@ goto_tempdir
 
 wget http://gnome-look.org/CONTENT/content-files/154296-FlatStudio-1.03.tar.gz -O flatstudio.tgz
 sudo tar xfv flatstudio.tgz -C /usr/share/themes/
+
+.config/Trolltech.conf <<EOF
+[Qt]
+style=GTK+
+EOF

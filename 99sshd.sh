@@ -1,14 +1,15 @@
 #!/bin/bash
 source "$(dirname "$0")/bs.sh"
 
+prompt_configure /etc/ssh/sshd_config
+
 cd /etc/ssh
 
-if [[ "$(head -n 1 sshd_config)" != "# OK" ]] ; then
-    INFO Configuring SSHd
-    # Install config
-    sudo mv sshd_config sshd_config.bak
-    sudo tee sshd_config <<EOF
-# OK
+INFO Configuring SSHd
+# Install config
+sudo mv sshd_config sshd_config.bak
+sudo tee sshd_config <<EOF
+# $BS_MARK
 Port 22
 
 Protocol 2
@@ -51,11 +52,15 @@ UseDNS no
 
 TCPKeepAlive yes
 EOF
-    # Regenerate host keys
+
+OK
+
+# Regenerate host keys
+if promptyn "Regenerate host keys?" "y" ; then
     sudo rm -f ssh_host_*_key
     sudo rm -f ssh_host_*_key.pub
     sudo dpkg-reconfigure openssh-server
-
-    # Restart server
-    sudo /etc/init.d/ssh restart
 fi
+
+# Restart server
+sudo /etc/init.d/ssh restart
