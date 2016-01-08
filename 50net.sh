@@ -3,6 +3,9 @@ source "$(dirname "$0")/bs.sh"
 
 prompt_install net
 
+require iproute2 ethtool net-tools iw wireless-tools udhcpc wpasupplicant \
+        wpasupplicant mawk e2fsprogs coreutils procps python-yaml
+
 mkdir -p ~/bin
 
 if [ ! -e ~/bin/net ] ; then
