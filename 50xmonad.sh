@@ -32,6 +32,10 @@ sudo chmod u+s .xmonad/blink
 sudo gcc .xmonad/suspend.c -o .xmonad/suspend
 sudo chmod u+s .xmonad/suspend
 
+# Compile `brightness' to control panel brightness
+sudo gcc .xmonad/brightness.c -o .xmonad/brightness
+sudo chmod u+s .xmonad/brightness
+
 # Update PATH maybe?
 [ -f ~/.profile ] && . ~/.profile
 
