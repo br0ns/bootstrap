@@ -14,7 +14,6 @@ for f in /bin/mount \
              /usr/bin/dotlockfile \
              /usr/bin/expiry \
              /usr/bin/gpasswd \
-             /usr/bin/newgrp \
              /usr/bin/passwd \
              /usr/bin/ssh-agent \
              /usr/bin/wall \
