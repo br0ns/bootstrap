@@ -17,9 +17,7 @@ fi
 
 INFO Installing XMonad
 cabal install xmonad
-
-# Currently version 0.11.4 does not compile with latest GHC...
-cabal install xmonad-contrib-0.11.3
+cabal install xmonad-contrib
 
 # My XMonad configuration needs this package
 cabal install regex-pcre
