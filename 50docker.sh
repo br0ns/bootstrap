@@ -19,4 +19,9 @@ EOF
 fi
 
 sudo apt-get install docker-engine
+
+sudo groupadd docker || true
+sudo usermod -aG docker $USER
+newgrp docker
+
 sudo service docker start
