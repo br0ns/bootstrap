@@ -441,6 +441,29 @@ cd
 # Be sure to have the latest and greatest PATH
 [ -f ~/.profile ] && . ~/.profile
 
+# Find SSH agent's socket, if running
+if [ -z ${SSH_AUTH_SOCK-} ] ; then
+    SSH_AUTH_SOCK=$(\
+        find /tmp -regex '/tmp/ssh-[a-zA-Z0-9]+/agent\.[0-9]+' 2>/dev/null \
+            | head -n 1 \
+            | tr -d '\n'
+                 )
+
+    # SSH agent is not running
+    if [ -z $SSH_AUTH_SOCK ] ; then
+        eval $(ssh-agent)
+    else
+        DEBUG Exporting SSH_AUTH_SOCK=$SSH_AUTH_SOCK
+        export SSH_AUTH_SOCK
+    fi
+fi
+
+# Add SSH key if not done so already
+if ! ssh-add -l >/dev/null ; then
+    INFO Adding key to SSH agent:
+    ssh-add
+fi
+
 # Set up trap handlers
 trap '__on_error' ERR
 trap '__on_exit' EXIT
