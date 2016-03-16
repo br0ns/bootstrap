@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # I mark files with this string so I can skip the ones I have already set uo
-BS_MARK="File written by Boostrap, do not edit"
+BS_MARK="File written by Bootstrap, do not edit"
 
 # Local variables
 __this_cmd=
@@ -142,7 +142,7 @@ __on_debug() {
         return
     fi
 
-    __log $__FG$__MAGENTA "+" "$__this_cmd"
+    __lognl $__FG$__MAGENTA "+" "$__this_cmd"
 }
 
 assert() {
@@ -281,7 +281,6 @@ require () {
         if dpkg --status $pkg >/dev/null 2>&1 ; then
             OK $pkg
         else
-            INFO Installing $pkg
             install $pkg
         fi
     done
@@ -402,7 +401,7 @@ function prompt_configure () {
     [ "$ASK_STEP" = true ] && return 0
     # The user ran the step directly which shows intent, so don't ask
     [ -z "${BOOTSTRAP_ALL+x}" ] && return 0
-    promptyn "\`$path' is not configured; Configure now?" "y" || exit 0
+    promptyn "\`$file' is not configured; Configure now?" "y" || exit 0
     return 0
 }
 
