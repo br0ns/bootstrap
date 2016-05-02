@@ -3,6 +3,10 @@
 # I mark files with this string so I can skip the ones I have already set uo
 BS_MARK="File written by Bootstrap, do not edit"
 
+# We need `realpath` but apparently it is not a part of `coreutils` on Ubuntu
+which realpath >/dev/null 2>&1 \
+    || apt-get install --yes --no-install-recommends realpath
+
 # Local variables
 __this_cmd=
 __this_lineno=
@@ -458,7 +462,7 @@ if [ -z ${SSH_AUTH_SOCK-} ] ; then
 fi
 
 # Add SSH key if not done so already
-if ! ssh-add -l >/dev/null ; then
+if ! ssh-add -l >/dev/null && [ -f ~/.ssh/id_rsa ] ; then
     INFO Adding key to SSH agent:
     ssh-add
 fi
