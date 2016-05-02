@@ -1,6 +1,8 @@
 #!/bin/bash
 source "$(dirname "$0")/bs.sh"
 
+require android-tools-adb jmtpfs
+
 [ -e /etc/udev/rules.d/51-android.rules ] && exit 0
 
 INFO Installing udev rules for Android phones
@@ -15,3 +17,10 @@ sudo chmod a+r /etc/udev/rules.d/69-mtp.rules
 
 INFO Restarting udev daemon
 sudo service udev restart
+
+mkdir -p ~/.android/
+echo "0x2a70" >> ~/.android/adb_usb.ini
+
+INFO Restarting ADB
+adb kill-server | true
+adb start-server

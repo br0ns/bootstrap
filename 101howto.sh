@@ -27,3 +27,14 @@ Then set the order in a .conf file in /etc/modprobe.d:
   $ cat /etc/modprobe.d/alsa-base.conf
   options snd_hda_intel enable=1,0
 "
+
+INFO "[Phone]
+
+Mount:
+
+  $ jmtpfs <mountpoint>
+
+Unmount:
+
+  $ fusermount -u <mountpoint>
+"
