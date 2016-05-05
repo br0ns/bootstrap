@@ -11,7 +11,7 @@ set -e
 
 # If this file does not exist it's probably because we're bootstrapping a fresh
 # system.  So we download the Git repository and bootstrap from there
-if [ ! -e "$(dirname "$0")/bs.sh" ] ; then
+if [ ! -e "$DIR/bs.sh" ] ; then
     # Required packages
     for pkg in ca-certificates unzip wget ; do
         if ! dpkg --status $pkg >/dev/null 2>&1 ; then
@@ -29,11 +29,11 @@ if [ ! -e "$(dirname "$0")/bs.sh" ] ; then
 fi
 
 # Go through all the step scripts and execute them
-for f in "$DIR"/* ; do
+for f in $(ls "$DIR" | sort -n) ; do
+    p="$DIR/$f"
     # Path must be an executable (-x) file (-f) which starts with a digit
-    [[ "$(basename "$f")" =~ ^[0-9] ]] && \
-        [ -f "$f" ] && [ -x "$f" ] || continue
-    "$f" "$@"
+    [[ "$f" =~ ^[0-9] ]] && [ -f "$p" ] && [ -x "$p" ] || continue
+    "$p" "$@"
 done
 
 exit 0
