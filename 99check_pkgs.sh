@@ -9,6 +9,7 @@ fi
 
 prompt_step "Run \`check-pkgs' now?" "y"
 
-INFO Updating Linux kernel headers in case kernel modules are installed
-apt-get -y install linux-headers-$(uname -r)
+# INFO Updating Linux kernel headers in case kernel modules are installed
+# apt-get -y install linux-headers-$(uname -r)
+
 check-pkgs
