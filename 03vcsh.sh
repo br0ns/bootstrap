@@ -2,7 +2,7 @@
 source "$(dirname "$0")/bs.sh"
 
 INFO "Checking VCSH repositories"
-REPOS="bash emacs gdb git gtk misc pkgs secret xconfig xmonad"
+REPOS="bash emacs gdb git gtk pkgs secret xconfig xmonad"
 DOASKPULL=0
 for repo in $REPOS ; do
     if vcsh status $repo >/dev/null 2>&1 ; then
