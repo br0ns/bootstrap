@@ -1,7 +1,7 @@
 #!/bin/bash
 source "$(dirname "$0")/bs.sh"
 
-require android-tools-adb jmtpfs
+require adb fastboot jmtpfs
 
 [ -e /etc/udev/rules.d/51-android.rules ] && exit 0
 
