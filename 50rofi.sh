@@ -15,6 +15,8 @@ require \
     libxcb-util0-dev \
     libxcb-icccm4-dev \
     libxcb-xinerama0-dev \
+    libxcb-xrm-dev \
+    libxcb-randr0-dev \
     libx11-xcb-dev \
     libxkbcommon-dev \
     libxkbcommon-x11-dev
