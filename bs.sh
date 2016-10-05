@@ -282,7 +282,9 @@ installed () {
 require () {
     INFO "Checking for required packages"
     for pkg in $@ ; do
-        if dpkg --status $pkg >/dev/null 2>&1 ; then
+        if (dpkg --status $pkg || \
+            dpkg --status $pkg:$(dpkg-architecture -q DEB_HOST_ARCH) \
+           ) >/dev/null 2>&1 ; then
             OK $pkg
         else
             install $pkg
