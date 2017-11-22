@@ -4,6 +4,10 @@ source "$(dirname "$0")/bs.sh"
 prompt_install rofi Rofi
 
 require \
+    gcc \
+    bison \
+    flex \
+    check \
     autoconf \
     automake \
     libpango1.0-dev \
