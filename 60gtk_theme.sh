@@ -6,11 +6,16 @@ cat > .config/Trolltech.conf <<EOF
 style=GTK+
 EOF
 
-[ -e /usr/share/themes/FlatStudio/ ] && exit 0
+[ -e /usr/share/themes/Materia/ ] && exit 0
 
-prompt_step "FlatStudio GTK theme is not installed; Download and install now?" "y"
+prompt_step "Materia GTK theme is not installed; Download and install now?" "y"
+
+require gnome-themes-standard libglib2.0-dev gtk2-engines-murrine
 
 goto_tempdir
 
-wget http://gnome-look.org/CONTENT/content-files/154296-FlatStudio-1.03.tar.gz -O flatstudio.tgz
-sudo tar xfv flatstudio.tgz -C /usr/share/themes/
+curl -sL https://github.com/nana-4/materia-theme/archive/master.tar.gz | tar xz
+cd materia-theme-master
+sudo ./install.sh
+
+chromium "file://$PWD/src/chrome/Materia-dark Theme.crx"
