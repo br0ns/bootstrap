@@ -23,8 +23,7 @@ for repo in $REPOS ; do
         vcsh init $repo
         vcsh $repo remote add origin git@github.com:br0ns/vcsh-$repo.git
         vcsh $repo fetch origin master
-        vcsh $repo branch --set-upstream-to=origin/master master
-        vcsh $repo reset --hard origin/master
+        vcsh $repo checkout -f -B master --track origin/master
     fi
     assert [ -d ".config/vcsh/repo.d/$repo.git" ]
 done
