@@ -16,6 +16,7 @@ goto_tempdir
 
 curl -sL https://github.com/nana-4/materia-theme/archive/master.tar.gz | tar xz
 cd materia-theme-master
+chmod +x install.sh
 sudo ./install.sh
 
-chromium "file://$PWD/src/chrome/Materia-dark Theme.crx"
+chromium "file://$PWD/src/chrome/Materia-dark Theme.crx" || true
