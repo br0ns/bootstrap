@@ -5,7 +5,7 @@ prompt_install xmonad XMonad
 
 require \
     ghc cabal-install zlib1g-dev libx11-dev libxinerama-dev libxrandr-dev \
-    libxft-dev libpcre3-dev
+    libxft-dev libpcre3-dev libxss-dev
 
 INFO Updating cabal
 cabal update
