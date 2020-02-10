@@ -3,7 +3,7 @@
 # Where in the world is bootstrap?
 BOOTSTRAP_ARCHIVE="https://github.com/br0ns/bootstrap/archive/master.zip"
 
-DIR="$(realpath "$(dirname "$0")")"
+THISDIR="$(dirname "$(realpath "$0")")"
 export BOOTSTRAP_ALL=true
 
 # Fail on any error
@@ -11,7 +11,7 @@ set -e
 
 # If this file does not exist it's probably because we're bootstrapping a fresh
 # system.  So we download the Git repository and bootstrap from there
-if [ ! -e "$DIR/bs.sh" ] ; then
+if [ ! -e "$THISDIR/bs.sh" ] ; then
     # Required packages
     for pkg in ca-certificates unzip wget ; do
         if ! dpkg --status $pkg >/dev/null 2>&1 ; then
@@ -20,13 +20,18 @@ if [ ! -e "$DIR/bs.sh" ] ; then
         fi
     done
 
-    TEMPDIR="$(mktemp -d /tmp/bootstrap.XXXXXXXXXX)"
-    echo -e "Downloading \x1b[32m$BOOTSTRAP_ARCHIVE\x1b[m => \x1b[32m$TEMPDIR/\x1b[m"
-    cd $TEMPDIR
+    echo -e "Downloading \x1b[32m$BOOTSTRAP_ARCHIVE\x1b[m => \x1b[32m$PWD/\x1b[m"
     wget "$BOOTSTRAP_ARCHIVE"
-    unzip master.zip
-    DIR="$(realpath "$TEMPDIR/bootstrap-master/")"
+    unzip master.zip && rm master.zip
+    # Overwrite this script with a symlink to it inside the downloaded repo, so
+    # subsequent runs won't download it again
+    BSDIR="$(realpath "$PWD"/bootstrap-master)"
+    ln -sf "$BSDIR"/bootstrap "$0"
+else
+    BSDIR="$THISDIR"
 fi
+
+exit 0
 
 # Go through all the step scripts and execute them
 for f in $(ls "$DIR" | sort -n) ; do
