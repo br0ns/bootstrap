@@ -3,36 +3,73 @@
 # Where in the world is bootstrap?
 BOOTSTRAP_ARCHIVE="https://github.com/br0ns/bootstrap/archive/master.zip"
 
-DIR="$(realpath "$(dirname "$0")")"
+THISDIR="$(dirname "$(realpath "$0")")"
 export BOOTSTRAP_ALL=true
 
 # Fail on any error
 set -e
 
+# Packages needed for Bootstrap to work
+REQUIREMENTS=(
+    ca-certificates
+    unzip
+    wget
+    whiptail
+)
+
 # If this file does not exist it's probably because we're bootstrapping a fresh
 # system.  So we download the Git repository and bootstrap from there
-if [ ! -e "$DIR/bs.sh" ] ; then
+if [ ! -e "$THISDIR/bs.sh" ] ; then
     # Required packages
-    for pkg in ca-certificates unzip wget ; do
+    for pkg in $REQUIREMENTS ; do
         if ! dpkg --status $pkg >/dev/null 2>&1 ; then
             echo Installing $pkg
             sudo CHECK_PKGS_DONT_RUN=1 apt-get install --yes --no-install-recommends $pkg
         fi
     done
 
-    TEMPDIR="$(mktemp -d /tmp/bootstrap.XXXXXXXXXX)"
-    echo -e "Downloading \x1b[32m$BOOTSTRAP_ARCHIVE\x1b[m => \x1b[32m$TEMPDIR/\x1b[m"
-    cd $TEMPDIR
+    echo -e "Downloading \x1b[32m$BOOTSTRAP_ARCHIVE\x1b[m => \x1b[32m$PWD/\x1b[m"
     wget "$BOOTSTRAP_ARCHIVE"
-    unzip master.zip
-    DIR="$(realpath "$TEMPDIR/bootstrap-master/")"
+    unzip master.zip && rm master.zip
+    # Overwrite this script with a symlink to it inside the downloaded repo, so
+    # subsequent runs won't download it again
+    BSDIR="$(realpath "$PWD"/bootstrap-master)"
+    ln -sf "$BSDIR"/bootstrap "$0"
+else
+    BSDIR="$THISDIR"
 fi
 
-# Go through all the step scripts and execute them
-for f in $(ls "$DIR" | sort -n) ; do
-    p="$DIR/$f"
-    # Path must be an executable (-x) file (-f) which starts with a digit
-    [[ "$f" =~ ^[0-9] ]] && [ -f "$p" ] && [ -x "$p" ] || continue
+# Build menu for whiptail showing all the steps
+OPTS=()
+OPTN=0
+for f in $(ls "$BSDIR" | sort -n) ; do
+    p="$BSDIR/$f"
+    # Path must be a file (-f) which starts with a digit
+    [[ "$f" =~ ^[0-9] ]] && [ -f "$p" ] || continue
+    # Executable (-x) files are selected by default
+    if [ -x "$p" ] ; then
+        s=on
+    else
+        s=off
+    fi
+    OPTS+=("$p" "$f" "$s")
+    OPTN=$((OPTN+1))
+done
+
+ROWS=$(tput lines 2>/dev/null || echo 25)
+COLS=72
+
+MAXOPTN=$((ROWS-7))
+if [ $OPTN -gt $MAXOPTN ] ; then
+    OPTN=$MAXOPTN
+fi
+
+whiptail --separate-output --notags --checklist \
+         "Select steps:" \
+         $ROWS \
+         $COLS \
+         $OPTN \
+         "${OPTS[@]}" 2>&1 >/dev/tty | while read p ; do
     "$p" "$@"
 done
 
