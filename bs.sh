@@ -22,6 +22,7 @@ KEEP_TEMPDIR=
 STEP="$(basename "$0")"
 STEP="${STEP%.*}"
 STEP_FILE="$(realpath "$0")"
+TEMPDIR="/tmp"
 
 # Exit on any error
 set -e
@@ -222,15 +223,16 @@ __on_int() {
 
 # Parse command line options
 __usage() {
-    echo "usage: $(basename "$0") [-h] [-a] [-f] [-v|-s] [-k]"
+    echo "usage: $(basename "$0") [-h] [-a] [-f] [-v|-s] [-k] [-t DIR]"
     echo "  -h Help"
     echo "  -a Ask before each step"
     echo "  -f Force re-install (implies -a)"
     echo "  -v More output"
     echo "  -s Less output"
     echo "  -k Keep temporary directories"
+    echo "  -t Set location of temporary files (default: /tmp).  Implies -k."
 }
-while getopts "hafvsk" OPTION ; do
+while getopts "hafvskt:" OPTION ARG ; do
     case $OPTION in
         h) __usage
            exit 1
@@ -245,6 +247,9 @@ while getopts "hafvsk" OPTION ; do
         s) SILENT=true
            ;;
         k) KEEP_TEMPDIR=true
+           ;;
+        t) KEEP_TEMPDIR=true
+           TEMPDIR="$ARG"
            ;;
         ?) __usage
         exit 1
@@ -419,13 +424,12 @@ function prompt_step () {
 }
 
 function goto_tempdir () {
-    # TEMPDIR="/tmp/install-$STEP"
-    TEMPDIR="$(mktemp -d /tmp/bootstrap.XXXXXXXXXX)"
-    CLEAN="rm -rf $TEMPDIR 2>/dev/null || sudo rm -rf $TEMPDIR"
+    TMPD="$(mktemp -d "$TEMPDIR"/bootstrap.XXXXXXXXXX)"
+    CLEAN="rm -rf $TMPD 2>/dev/null || sudo rm -rf $TMPD"
     eval $CLEAN
-    mkdir -p $TEMPDIR
-    cd $TEMPDIR
-    INFO "Changing directory to $TEMPDIR"
+    mkdir -p $TMPD
+    cd $TMPD
+    INFO "Changing directory to $TMPD"
     # Update exit handler to clean up
     if [ "$KEEP_TEMPDIR" != true ] ; then
         trap "$CLEAN;__on_exit" EXIT
