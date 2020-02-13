@@ -59,17 +59,22 @@ done
 ROWS=$(tput lines 2>/dev/null || echo 25)
 COLS=72
 
-MAXOPTN=$((ROWS-7))
+SLACK=7
+MAXOPTN=$((ROWS-SLACK))
 if [ $OPTN -gt $MAXOPTN ] ; then
     OPTN=$MAXOPTN
+else
+    ROWS=$((OPTN+SLACK))
 fi
 
-whiptail --separate-output --notags --checklist \
-         "Select steps:" \
-         $ROWS \
-         $COLS \
-         $OPTN \
-         "${OPTS[@]}" 2>&1 >/dev/tty | while read p ; do
+STEPS=$(whiptail --separate-output --notags --checklist \
+                 "Select steps:" \
+                 $ROWS \
+                 $COLS \
+                 $OPTN \
+                 "${OPTS[@]}" 2>&1 >/dev/tty)
+
+for p in ${STEPS[@]} ; do
     "$p" "$@"
 done
 
