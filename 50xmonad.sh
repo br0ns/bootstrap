@@ -16,7 +16,7 @@ if [ ! -f ".cabal/bin/cabal" ] ; then
 fi
 
 INFO Installing XMonad
-cabal install xmonad
+cabal install xmonad --overwrite-policy=always
 cabal install xmonad-contrib
 
 # My XMonad configuration needs this package
